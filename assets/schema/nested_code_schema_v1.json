@@ -1,0 +1,72 @@
+{
+  "schema_version": "nested_code_v1",
+  "description": "Structural record of one Python source file: its scopes, the control-flow blocks inside them, and the relations between scopes.",
+  "type": "object",
+  "required": ["file_id", "scopes", "relations"],
+  "properties": {
+    "file_id": {
+      "type": "string",
+      "description": "Identifier of the source file, normally its stem."
+    },
+    "scopes": {
+      "type": "array",
+      "description": "Every namespace in the file: the module itself, then each class, function, method and lambda.",
+      "items": {
+        "type": "object",
+        "required": ["scope_id", "name", "kind"],
+        "properties": {
+          "scope_id": {"type": "string", "description": "Dotted path from the module, e.g. module.Ledger42.tally"},
+          "name": {"type": "string", "description": "Bare name of the scope"},
+          "kind": {"type": "string", "enum": ["module", "class", "function", "async_function", "method", "async_method", "lambda", "comprehension"]},
+          "parent_id": {"type": "string", "description": "scope_id of the enclosing scope; empty for the module"},
+          "is_async": {"type": "boolean"},
+          "is_recursive": {"type": "boolean", "description": "The scope calls its own name"},
+          "is_generator": {"type": "boolean", "description": "The scope yields"},
+          "decorators": {"type": "array", "items": {"type": "string"}},
+          "params": {"type": "array", "items": {"type": "string"}},
+          "start_line": {"type": "integer"},
+          "end_line": {"type": "integer"},
+          "max_block_depth": {"type": "integer", "description": "Deepest chain of control-flow blocks inside this scope, counting from 1"},
+          "block_kinds": {"type": "array", "items": {"type": "string"}, "description": "Distinct control-flow constructs used in this scope"}
+        }
+      }
+    },
+    "blocks": {
+      "type": "array",
+      "description": "Control-flow blocks, each pointing at its scope and its enclosing block. Optional for a model extraction; always present in a gold record.",
+      "items": {
+        "type": "object",
+        "required": ["block_id", "scope_id", "kind", "depth"],
+        "properties": {
+          "block_id": {"type": "string"},
+          "scope_id": {"type": "string"},
+          "kind": {"type": "string", "enum": ["for", "async_for", "while", "if", "try", "with", "async_with", "match", "case", "except", "finally", "else"]},
+          "parent_block_id": {"type": "string", "description": "Enclosing block; empty when the block sits directly in the scope body"},
+          "depth": {"type": "integer", "description": "Nesting level within the scope, starting at 1"},
+          "line": {"type": "integer"},
+          "test": {"type": "string", "description": "Short rendering of the loop target or condition"}
+        }
+      }
+    },
+    "relations": {
+      "type": "array",
+      "description": "Edges between scopes: who calls whom, which scopes recurse, which class a scope inherits from.",
+      "items": {
+        "type": "object",
+        "required": ["relation_id", "relation_type", "from_scope", "to_scope"],
+        "properties": {
+          "relation_id": {"type": "string"},
+          "relation_type": {"type": "string", "enum": ["calls", "self_recursive", "mutually_recursive", "inherits", "closes_over", "yields_from"]},
+          "from_scope": {"type": "string"},
+          "to_scope": {"type": "string"},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "entrypoints": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "scope_ids reached from module level or from the __main__ guard."
+    }
+  }
+}

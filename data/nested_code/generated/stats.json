@@ -1,0 +1,101 @@
+{
+  "n_samples": 1000,
+  "total_lines": 843965,
+  "mean_lines": 844.0,
+  "min_lines": 759,
+  "max_lines": 1169,
+  "total_ast_nodes": 6008056,
+  "splits": {
+    "train": 800,
+    "val": 100,
+    "test": 100
+  },
+  "unit_kinds": {
+    "branch_pyramid": 1000,
+    "loop_pyramid": 1000,
+    "match_nested": 409,
+    "closure_tower": 401,
+    "try_pyramid": 400,
+    "comprehension": 398,
+    "state_machine": 397,
+    "recursion": 390,
+    "with_pyramid": 383,
+    "class_tower": 379,
+    "generators": 378,
+    "data_walk": 377,
+    "async_nested": 227
+  },
+  "block_depth": {
+    "10": 1,
+    "11": 9,
+    "12": 23,
+    "13": 83,
+    "14": 321,
+    "15": 331,
+    "16": 232
+  },
+  "loop_depth": {
+    "5": 46,
+    "6": 83,
+    "7": 113,
+    "8": 146,
+    "9": 157,
+    "10": 223,
+    "11": 232
+  },
+  "branch_depth": {
+    "7": 40,
+    "8": 75,
+    "9": 104,
+    "10": 141,
+    "11": 150,
+    "12": 244,
+    "13": 246
+  },
+  "try_depth": {
+    "1": 600,
+    "4": 38,
+    "5": 47,
+    "6": 315
+  },
+  "with_depth": {
+    "0": 481,
+    "2": 136,
+    "4": 53,
+    "5": 41,
+    "6": 55,
+    "7": 64,
+    "8": 60,
+    "9": 48,
+    "10": 62
+  },
+  "function_depth": {
+    "1": 599,
+    "5": 43,
+    "6": 45,
+    "7": 50,
+    "8": 58,
+    "9": 62,
+    "10": 72,
+    "11": 71
+  },
+  "comprehension_depth": {
+    "2": 602,
+    "3": 398
+  },
+  "data_depth": {
+    "12": 1000
+  },
+  "with_nested_recursion": 390,
+  "with_mutual_recursion": 390,
+  "floor": {
+    "block": 8,
+    "loop": 4,
+    "branch": 4,
+    "lines": 700
+  },
+  "rejected_below_floor_or_invalid": 0,
+  "duplicates_discarded": 0,
+  "run_checked": 25,
+  "run_check_failures": []
+}

@@ -1,0 +1,225 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1360 1010" width="1360" height="1010"
+     font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" role="img"
+     aria-label="Architecture of the nested-code structure extraction pipeline">
+  <title>Nested Code → JSON · architecture</title>
+  <style>
+    .bg      { fill: var(--dg-bg, #0e1116); }
+    .band    { fill: var(--dg-band, #151a21); stroke: var(--dg-line, #242b35); stroke-width: 1; }
+    .bandlbl { fill: var(--dg-faint, #6b7a8c); font-size: 11px; font-weight: 700; letter-spacing: .14em; }
+    .box     { fill: var(--dg-box, #0a0d12); stroke: var(--dg-line, #242b35); stroke-width: 1.2; }
+    .box.accent { stroke: #4f9cf9; }
+    .box.gold   { stroke: #3fb950; }
+    .box.llm    { stroke: #f0b429; }
+    .box.out    { stroke: #a57aff; }
+    .box.infra  { stroke: var(--dg-line, #242b35); stroke-dasharray: 5 4; }
+    .group   { fill: none; stroke: var(--dg-line, #242b35); stroke-width: 1; stroke-dasharray: 4 4; }
+    .t       { fill: var(--dg-text, #e6edf3); font-size: 13px; font-weight: 600; }
+    .s       { fill: var(--dg-dim, #93a1b1); font-size: 10.5px; font-weight: 400; }
+    .xs      { fill: var(--dg-faint, #6b7a8c); font-size: 9.5px; }
+    .k.blue  { fill: #4f9cf9; } .k.green { fill: #3fb950; }
+    .k.amber { fill: #f0b429; } .k.purple{ fill: #a57aff; }
+    .edge    { fill: none; stroke: var(--dg-edge, #3a4452); stroke-width: 1.5; }
+    .edge.a  { marker-end: url(#arrow); }
+    .edge.dash { stroke-dasharray: 5 4; stroke: #3fb950; marker-end: url(#arrowg); }
+    .edge.back { stroke: #f85149; stroke-dasharray: 4 4; marker-end: url(#arrowr); }
+    .edge.learn { stroke: #ee6ebb; stroke-dasharray: 6 4; marker-end: url(#arrowp); }
+    .k.pink  { fill: #ee6ebb; }
+    .k.orange{ fill: #f0913c; }
+    .elbl    { fill: var(--dg-faint, #6b7a8c); font-size: 9.5px; }
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) .bg    { fill: #f6f8fa; }
+      :root:not([data-theme="dark"]) .band  { fill: #ffffff; stroke: #d6dde6; }
+      :root:not([data-theme="dark"]) .box   { fill: #ffffff; stroke: #d6dde6; }
+      :root:not([data-theme="dark"]) .box.accent { stroke: #4f9cf9; }
+      :root:not([data-theme="dark"]) .box.gold   { stroke: #3fb950; }
+      :root:not([data-theme="dark"]) .box.llm    { stroke: #d99a1a; }
+      :root:not([data-theme="dark"]) .box.out    { stroke: #a57aff; }
+      :root:not([data-theme="dark"]) .t     { fill: #1c2430; }
+      :root:not([data-theme="dark"]) .s     { fill: #55657a; }
+      :root:not([data-theme="dark"]) .xs,
+      :root:not([data-theme="dark"]) .elbl,
+      :root:not([data-theme="dark"]) .bandlbl { fill: #8695a8; }
+      :root:not([data-theme="dark"]) .edge  { stroke: #9aa7b6; }
+      :root:not([data-theme="dark"]) .group { stroke: #d6dde6; }
+    }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--dg-edge, #3a4452)"/>
+    </marker>
+    <marker id="arrowg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3fb950"/>
+    </marker>
+    <marker id="arrowr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#f85149"/>
+    </marker>
+    <marker id="arrowp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#ee6ebb"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1360" height="1010"/>
+
+  <!-- ═════════════════ BAND 1 · DATASET  (y 40–186) ═════════════════ -->
+  <rect class="band" x="40" y="40" width="1280" height="146" rx="10"/>
+  <text class="bandlbl" x="60" y="64">1 · DATASET GENERATION</text>
+
+  <path class="edge back a" d="M824,90 C824,68 536,68 536,88"/>
+  <text class="elbl" x="680" y="62" text-anchor="middle">below the depth floor → discard and regenerate</text>
+
+  <rect class="box accent" x="118" y="92" width="260" height="72" rx="7"/>
+  <text class="t"  x="134" y="118">generate_nested_code.py</text>
+  <text class="s"  x="134" y="137">assemble units until the</text>
+  <text class="s"  x="134" y="153">line target is reached</text>
+
+  <rect class="box" x="406" y="92" width="260" height="72" rx="7"/>
+  <text class="t"  x="422" y="118">13 nesting templates</text>
+  <text class="s"  x="422" y="137">loops · branches · try · with · match</text>
+  <text class="s"  x="422" y="153">closures · classes · recursion · async</text>
+
+  <rect class="box gold" x="694" y="92" width="260" height="72" rx="7"/>
+  <text class="t k green" x="710" y="118">ast.parse + measure</text>
+  <text class="s"  x="710" y="137">depth floor · sha256 dedupe</text>
+  <text class="s"  x="710" y="153">compile + execute check</text>
+
+  <rect class="box" x="982" y="92" width="260" height="72" rx="7"/>
+  <text class="t"  x="998" y="118">1000 programs</text>
+  <text class="s"  x="998" y="137">843,965 lines · depth ≤ 16</text>
+  <text class="s"  x="998" y="153">manifest.jsonl · stats.json</text>
+
+  <path class="edge a" d="M378,128 L401,128"/>
+  <path class="edge a" d="M666,128 L689,128"/>
+  <path class="edge a" d="M954,128 L977,128"/>
+
+  <!-- gutter: dataset feeds the pipeline -->
+  <path class="edge a" d="M1112,166 L1112,198 L157,198 L157,311"/>
+
+  <!-- ═════════════════ BAND 2 · EXTRACTION  (y 216–616) ═════════════════ -->
+  <rect class="band" x="40" y="216" width="1280" height="400" rx="10"/>
+  <text class="bandlbl" x="60" y="240">2 · EXTRACTION PIPELINE</text>
+
+  <rect class="box" x="72" y="316" width="170" height="76" rx="7"/>
+  <text class="t"  x="88" y="344">sample .py</text>
+  <text class="s"  x="88" y="364">~850 lines</text>
+  <text class="s"  x="88" y="380">depth 14–16</text>
+
+  <rect class="box gold" x="300" y="264" width="300" height="90" rx="7"/>
+  <text class="t k green" x="316" y="290">app/gold.py</text>
+  <text class="s"  x="316" y="309">AST ground truth — nothing annotated</text>
+  <text class="s"  x="316" y="325">scopes · blocks · relations</text>
+  <text class="xs" x="316" y="341">self / mutual recursion · depth per scope</text>
+
+  <rect class="group" x="300" y="376" width="440" height="124" rx="8"/>
+  <text class="xs" x="316" y="396">app/llm_client.py · ollama | groq | openrouter</text>
+
+  <rect class="box llm" x="316" y="402" width="180" height="38" rx="6"/>
+  <text class="t k amber" x="330" y="420">single call</text>
+  <text class="xs" x="330" y="433">whole file, one request</text>
+
+  <rect class="box llm" x="316" y="448" width="408" height="38" rx="6"/>
+  <text class="t k amber" x="330" y="466">multicall</text>
+  <text class="xs" x="330" y="479">sectioner → one request per def/class → merge_partials</text>
+
+  <path class="edge a" d="M242,336 C272,336 274,309 297,309"/>
+  <path class="edge a" d="M242,366 C272,366 274,410 297,410"/>
+
+  <!-- retrieval: the nearest already-solved sections, from the train split only -->
+  <rect class="box" x="60" y="408" width="180" height="70" rx="7" style="stroke:#f0913c"/>
+  <text class="t k orange" x="76" y="432">retriever.py</text>
+  <text class="s"  x="76" y="450">nearest solved sections</text>
+  <text class="s"  x="76" y="466">train split only</text>
+  <path class="edge a" d="M240,443 L297,443"/>
+  <path class="edge dash" d="M450,356 L450,372"/>
+  <text class="elbl" x="462" y="364">worked example, built by gold.py</text>
+
+  <!-- processing chain -->
+  <rect class="box" x="220" y="528" width="200" height="66" rx="7"/>
+  <text class="t"  x="236" y="554">extract_json</text>
+  <text class="s"  x="236" y="574">out of the reply</text>
+
+  <rect class="box" x="460" y="528" width="200" height="66" rx="7"/>
+  <text class="t"  x="476" y="554">normalize</text>
+  <text class="s"  x="476" y="574">lexicon: def → function</text>
+
+  <rect class="box" x="700" y="528" width="200" height="66" rx="7"/>
+  <text class="t"  x="716" y="554">validate</text>
+  <text class="s"  x="716" y="574">schema · errors vs warnings</text>
+
+  <rect class="box gold" x="940" y="528" width="200" height="66" rx="7"/>
+  <text class="t k green" x="956" y="554">score vs gold</text>
+  <text class="s"  x="956" y="574">F1 · accuracy · depth MAE</text>
+
+  <path class="edge a" d="M520,502 C520,516 420,512 320,525"/>
+  <path class="edge a" d="M420,561 L457,561"/>
+  <path class="edge a" d="M660,561 L697,561"/>
+  <path class="edge a" d="M900,561 L937,561"/>
+
+  <path class="edge a" d="M600,300 C960,262 1274,288 1274,561 L1146,561"/>
+  <text class="elbl" x="700" y="270">ground truth for every file — no annotation step</text>
+
+  <!-- self-improvement loop: failures are mined into prompt hints, kept only if they generalise -->
+  <rect class="box" x="940" y="408" width="200" height="70" rx="7" style="stroke:#ee6ebb"/>
+  <text class="t k pink" x="956" y="432">auto_improve.py</text>
+  <text class="s"  x="956" y="450">mine failures → rules +</text>
+  <text class="s"  x="956" y="466">corrected examples</text>
+
+  <rect class="box" x="762" y="408" width="150" height="70" rx="7" style="stroke:#ee6ebb"/>
+  <text class="t k pink" x="778" y="432">learned_hints</text>
+  <text class="s"  x="778" y="450">.json — working</text>
+  <text class="s"  x="778" y="466">memory, versioned</text>
+
+  <path class="edge learn" d="M1040,526 L1040,480"/>
+  <path class="edge learn" d="M938,443 L915,443"/>
+  <path class="edge learn" d="M760,443 L742,443"/>
+  <text class="elbl" x="772" y="400">read by both prompt builders · kept only if the held-out split improves</text>
+
+  <!-- ═════════════════ BAND 3 · OUTPUTS  (y 646–986) ═════════════════ -->
+  <rect class="band" x="40" y="646" width="1280" height="340" rx="10"/>
+  <text class="bandlbl" x="60" y="670">3 · PERSISTENCE &amp; VIEWS</text>
+
+  <!-- distribution bus out of score -->
+  <path class="edge" d="M1040,596 L1040,674"/>
+  <path class="edge" d="M224,674 L1136,674"/>
+  <path class="edge a" d="M224,674 L224,691"/>
+  <path class="edge a" d="M528,674 L528,691"/>
+  <path class="edge a" d="M832,674 L832,691"/>
+  <path class="edge a" d="M1136,674 L1136,691"/>
+
+  <rect class="box out" x="84" y="694" width="280" height="84" rx="7"/>
+  <text class="t k purple" x="100" y="722">nested_code.db</text>
+  <text class="s"  x="100" y="742">code_runs: record, validity,</text>
+  <text class="s"  x="100" y="759">score, model, elapsed</text>
+
+  <rect class="box out" x="388" y="694" width="280" height="84" rx="7"/>
+  <text class="t k purple" x="404" y="722">results/preds/&lt;file_id&gt;/</text>
+  <text class="s"  x="404" y="742">pred · report · gold</text>
+  <text class="s"  x="404" y="759">tree.json · hierarchy.json</text>
+
+  <rect class="box out" x="692" y="694" width="280" height="84" rx="7"/>
+  <text class="t k purple" x="708" y="722">results/metrics/</text>
+  <text class="s"  x="708" y="742">per-file rows + aggregate</text>
+  <text class="s"  x="708" y="759">one JSON per batch run</text>
+
+  <rect class="box accent" x="996" y="694" width="280" height="84" rx="7"/>
+  <text class="t k blue" x="1012" y="722">app/hierarchy.py</text>
+  <text class="s"  x="1012" y="742">to_scope_hierarchy — flat view</text>
+  <text class="s"  x="1012" y="759">to_nested_tree — the real tree</text>
+
+  <!-- collection bus into the console -->
+  <path class="edge" d="M224,780 L224,798"/>
+  <path class="edge" d="M528,780 L528,798"/>
+  <path class="edge" d="M832,780 L832,798"/>
+  <path class="edge" d="M1136,780 L1136,798"/>
+  <path class="edge" d="M224,798 L1136,798"/>
+  <path class="edge a" d="M680,798 L680,821"/>
+
+  <rect class="box accent" x="330" y="824" width="700" height="76" rx="7"/>
+  <text class="t k blue" x="346" y="852">webapp/server.py · console</text>
+  <text class="s"  x="346" y="871">Overview · Dataset · Extract · Hierarchy · Evaluation · History</text>
+  <text class="xs" x="346" y="888">hierarchy views: Diagram · Indented · Flat · ASCII · JSON</text>
+
+  <rect class="box infra" x="84" y="924" width="1192" height="50" rx="7"/>
+  <text class="t"  x="100" y="946">scripts/deploy_gpu.sh</text>
+  <text class="s"  x="300" y="946">inspect · push · setup · run · pull</text>
+  <text class="xs" x="566" y="946">the same pipeline, run on heliosH200 — 4 × H200 143 GB · gpt-oss:120b · SSH key auth only</text>
+</svg>

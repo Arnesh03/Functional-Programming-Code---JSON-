@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nested Code → JSON · Console</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌳</text></svg>">
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">{ }</span>
+      <div>
+        <div class="brand-title">Nested Code → JSON</div>
+        <div class="brand-sub">Structure extraction console</div>
+      </div>
+    </div>
+    <div class="run-config">
+      <label class="inline-field">
+        <span>Strategy</span>
+        <select id="strategy">
+          <option value="gold">gold · no model</option>
+          <option value="multicall" selected>multicall · per definition</option>
+          <option value="single">single · whole file</option>
+        </select>
+      </label>
+    </div>
+    <div id="status-chips" class="chips" aria-live="polite"></div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab is-active" role="tab" data-tab="docs" aria-selected="true">Overview</button>
+    <button class="tab" role="tab" data-tab="dataset" aria-selected="false">Dataset</button>
+    <button class="tab" role="tab" data-tab="extract" aria-selected="false">Extract</button>
+    <button class="tab" role="tab" data-tab="hierarchy" aria-selected="false">Hierarchy</button>
+    <button class="tab" role="tab" data-tab="eval" aria-selected="false">Evaluation</button>
+    <button class="tab" role="tab" data-tab="history" aria-selected="false">History</button>
+  </nav>
+
+  <main>
+    <!-- ───────────────────────────── Overview / documentation ───────────── -->
+    <section class="panel is-active" id="panel-docs" role="tabpanel">
+      <div class="card doc">
+        <div class="card-head"><h2>What this is</h2></div>
+        <p>A pipeline that reads one Python file and reports its <b>structure</b> as JSON: every
+           scope (module, class, function, method), the control-flow blocks inside each, and the
+           relations between them (calls, recursion, mutual recursion, inheritance).</p>
+        <p>It is the OPORD→JSON architecture pointed at code. The stages are unchanged, and so is
+           the reason for each one.</p>
+
+        <div class="pipeline" id="pipeline-diagram"></div>
+
+        <div class="card-head">
+          <h2>Architecture</h2>
+          <div class="row-controls">
+            <a class="btn-ghost" href="/architecture.svg" download="architecture.svg">Download SVG</a>
+          </div>
+        </div>
+        <p>Three bands: the dataset is generated and measured, a file is extracted and scored
+           against its own AST, and the result is stored and read. The green path is ground
+           truth — it needs no model and no annotation, which is what makes the score on the
+           right meaningful.</p>
+        <div class="arch" id="arch-diagram"></div>
+
+        <div class="card-head"><h2>The one thing code gives you that orders did not</h2></div>
+        <p>An OPORD needs a human to write its gold record, because only a human knows what an
+           order means. A Python file does not have that problem — the parser already knows. So
+           <code>app/gold.py</code> reads ground truth straight out of the AST, and
+           <b>every run is scored against truth as it happens</b>, with no annotation step at all.</p>
+
+        <div class="card-head"><h2>Modules</h2></div>
+        <div class="table-wrap"><table class="table" id="modules-table"></table></div>
+
+        <div class="card-head"><h2>Record schema</h2></div>
+        <p>The shape the model must answer in, and the shape gold is produced in — so they are
+           directly comparable. Full schema at <code>assets/schema/nested_code_schema_v1.json</code>.</p>
+        <div class="table-wrap"><table class="table" id="schema-table"></table></div>
+
+        <div class="card-head"><h2>Two conventions that decide what the numbers mean</h2></div>
+        <ul class="bullets">
+          <li><b><code>elif</code> counts as a level deeper.</b> Python represents it as a nested
+              <code>If</code>, so an if/elif/elif ladder is three levels of branch nesting. The
+              dataset manifest was measured the same way, so scope depth and manifest depth agree.</li>
+          <li><b>A call is a relation only when it resolves to a scope in the same file.</b>
+              <code>len</code>, <code>print</code> and imports are not structure, and recording
+              them would bury the signal in noise.</li>
+        </ul>
+
+        <div class="card-head">
+          <h2>Results</h2>
+          <div class="row-controls">
+            <a class="btn-ghost" href="/results.md" download>All results (.md)</a>
+          </div>
+        </div>
+        <p>Best measured run: <b>20 files, gpt-oss:120b, multicall, 4 &times; H200</b> — 46.2 min,
+           schema-valid 20/20, no failures. Scope F1 is 1.000 on <em>every</em> file.</p>
+        <div class="metricgrid" id="headline"></div>
+        <h3>Every run, in order</h3>
+        <div class="table-wrap"><table class="table" id="run-history"></table></div>
+        <h3>What each score means, and how to read it
+          <span class="muted">— full reference in metrics.md</span></h3>
+        <p>Four scores are exactly 1.000 and they are not equally impressive. Each entry below says
+           how the number is computed and what it is really telling you.</p>
+        <div class="row-controls" style="margin-bottom:12px">
+          <a class="btn-ghost" href="/metrics.md" download>Metric reference (.md)</a>
+          <a class="btn-ghost" href="/results.md" download>All results (.md)</a>
+        </div>
+        <div id="metric-docs"></div>
+
+        <h3>Error analysis <span class="muted">— what the aggregates are made of</span></h3>
+        <p>350 scopes across 21 prediction/gold pairs. Re-runnable with
+           <code>python3 scripts/error_analysis.py</code>.</p>
+        <div id="error-findings"></div>
+
+        <h3>Bugs the measurements exposed</h3>
+        <p>Each of these was found by a number being wrong, not by reading code.</p>
+        <div class="table-wrap"><table class="table" id="bugs-found"></table></div>
+
+        <div class="card-head">
+          <h2>Compared to the OPORD build</h2>
+          <div class="row-controls">
+            <a class="btn-ghost" href="/architecture-diff.md" download>Full write-up (.md)</a>
+          </div>
+        </div>
+        <p>This is the OPORD→JSON architecture pointed at code. The extraction spine is the same;
+           retrieval was replaced by a self-generated exemplar, and ground truth plus scoring were
+           promoted into the pipeline itself. Saying it is <em>identical</em> would not be
+           accurate — three stages are gone.</p>
+        <div class="table-wrap"><table class="table" id="stage-diff"></table></div>
+
+        <h3>Modules</h3>
+        <div class="cols" id="module-diff"></div>
+
+        <h3>Where the scale changed</h3>
+        <div class="table-wrap"><table class="table" id="scale-diff"></table></div>
+
+        <h3>The hierarchy view — same join, swapped nouns</h3>
+        <p>Depth does the job phase did: the ordered axis the work is laid out along.</p>
+        <div class="table-wrap"><table class="table" id="hierarchy-map"></table></div>
+
+        <h3>Carried over intact</h3>
+        <div class="table-wrap"><table class="table" id="unchanged"></table></div>
+
+        <div class="card-head"><h2>Running it</h2></div>
+        <pre class="code" id="commands"></pre>
+      </div>
+    </section>
+
+    <!-- ───────────────────────────── Dataset ─────────────────────────────── -->
+    <section class="panel" id="panel-dataset" role="tabpanel" hidden>
+      <div class="card">
+        <div class="card-head"><h2>Dataset <span class="muted" id="dataset-meta"></span></h2></div>
+        <div class="statgrid" id="dataset-stats"></div>
+        <h3>Nesting depth distribution</h3>
+        <div id="depth-charts"></div>
+        <h3>Unit templates <span class="muted">files containing at least one</span></h3>
+        <div id="kind-chart"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h2>Samples</h2>
+          <div class="row-controls">
+            <input id="sample-filter" type="search" placeholder="filter by id…" spellcheck="false">
+          </div>
+        </div>
+        <div class="table-wrap"><table class="table" id="samples-table"></table></div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────────── Extract ─────────────────────────────── -->
+    <section class="panel" id="panel-extract" role="tabpanel" hidden>
+      <div class="layout">
+        <div class="card">
+          <div class="card-head"><h2>Source</h2></div>
+          <label class="field">
+            <span>Sample from <code>data/nested_code/generated</code></span>
+            <select id="extract-select"><option value="">Loading…</option></select>
+          </label>
+          <div class="actions">
+            <p id="extract-note" class="note"></p>
+            <button id="extract-run" class="btn-primary" type="button">Extract</button>
+          </div>
+          <p class="hint">Runs the chosen strategy, validates against the schema and lexicon,
+             then scores the result against the AST gold. <b>gold</b> needs no model and proves
+             the chain end to end.</p>
+          <div class="card-head"><h2>File</h2></div>
+          <pre class="code source" id="extract-source">Pick a sample to see it.</pre>
+        </div>
+        <div class="card result" id="extract-result">
+          <div class="empty">Extract a file to see its record, validation and score.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────────── Hierarchy ───────────────────────────── -->
+    <section class="panel" id="panel-hierarchy" role="tabpanel" hidden>
+      <div class="card">
+        <div class="card-head">
+          <h2>Scope hierarchy <span class="muted" id="hierarchy-meta"></span></h2>
+          <div class="row-controls">
+            <select id="hierarchy-select"></select>
+            <div class="segmented" id="hierarchy-view">
+              <button type="button" data-view="diagram" class="is-active">Diagram</button>
+              <button type="button" data-view="visual">Indented</button>
+              <button type="button" data-view="tree">Flat</button>
+              <button type="button" data-view="ascii">ASCII</button>
+              <button type="button" data-view="outline">Outline</button>
+              <button type="button" data-view="json">JSON</button>
+            </div>
+          </div>
+        </div>
+        <p class="hint"><b>Diagram</b> draws the real nested tree as a
+           node-link graph — depth left to right, every scope boxed, blocks folded until you open
+           them. <b>Indented</b> is the same tree — one root, every scope inside the
+           scope that encloses it, every block inside the block that encloses it, nested functions
+           sitting where they are defined. Click a node to fold it. <b>Flat</b> is the
+           OPORD-shaped view (scopes listed, blocks bucketed by depth), <b>ASCII</b> the same tree
+           for a terminal, <b>JSON</b> the structure itself.</p>
+        <div id="hierarchy-body"><div class="empty">Choose a sample.</div></div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────────── Evaluation ──────────────────────────── -->
+    <section class="panel" id="panel-eval" role="tabpanel" hidden>
+      <div class="card">
+        <div class="card-head">
+          <h2>Accuracy <span class="muted" id="eval-meta"></span></h2>
+          <div class="row-controls">
+            <select id="eval-run" aria-label="Evaluation run"></select>
+            <button id="eval-refresh" class="btn-ghost" type="button">Refresh</button>
+          </div>
+        </div>
+        <div id="eval-body"><div class="empty">Loading evaluation runs…</div></div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────────── History ─────────────────────────────── -->
+    <section class="panel" id="panel-history" role="tabpanel" hidden>
+      <div class="card">
+        <div class="card-head">
+          <h2>Recent runs <span class="muted" id="history-db"></span></h2>
+          <button id="history-refresh" class="btn-ghost" type="button">Refresh</button>
+        </div>
+        <div class="table-wrap"><table class="table" id="history-table"></table></div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="detail">
+    <div class="dialog-head">
+      <h3 id="detail-title"></h3>
+      <button type="button" class="btn-ghost" id="detail-close">Close</button>
+    </div>
+    <div id="detail-body"></div>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
