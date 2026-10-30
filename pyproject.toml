@@ -1,26 +1,13 @@
 [project]
-name = "opord2json"
+name = "nested-code-to-json"
 version = "0.1.0"
-description = "Convert battalion OPORDs and single military commands into schema-validated JSON (RAG + LLM)"
+description = "Extract the structure of deeply nested Python — scopes, control-flow blocks and relations — into schema-validated JSON, scored against AST-derived ground truth"
 readme = "README.md"
-requires-python = ">=3.13"
-dependencies = [
-    "chromadb>=1.3.5",
-    "faiss-cpu>=1.13.1",
-    "jsonschema>=4.25.1",
-    "langchain-community>=0.4.1",
-    "langchain-core>=1.0.7",
-    "langchain-openai>=1.0.3",
-    "langchain-text-splitters>=1.0.0",
-    "psycopg2-binary>=2.9.11",
-    "pydantic>=2.12.4",
-    "python-docx>=1.2.0",
-    "python-dotenv>=1.2.1",
-    "sentence-transformers>=5.1.2",
-]
+requires-python = ">=3.10"
+dependencies = []
 
 [project.optional-dependencies]
-# Celery worker (oporder_worker.py): uv run --extra worker celery -A oporder_worker worker
-worker = [
-    "celery[redis]>=5.4",
+# Only used to auto-load a .env file; app/config.py works without it.
+env = [
+    "python-dotenv>=1.2.1",
 ]
