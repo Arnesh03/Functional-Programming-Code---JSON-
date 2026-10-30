@@ -42,6 +42,11 @@ computed the same way and are poor, which is what a working measurement looks li
 
 Full record of every run: [`docs/results.md`](docs/results.md).
 
+For the project end to end in prose — the problem, the dataset, the schema, the results and
+their caveats — read [`docs/walkthrough.md`](docs/walkthrough.md). To present it, the deck is
+at [claude.ai/artifact/5NupPBxKAWfPUkdtVypZUH](https://claude.ai/artifact/5NupPBxKAWfPUkdtVypZUH)
+and [`docs/presenting-the-deck.md`](docs/presenting-the-deck.md) explains all 28 slides.
+
 ---
 
 ## The dataset
@@ -126,7 +131,8 @@ app/        the pipeline
 scripts/    generator, batch runner, auto_improve, error_analysis, deploy_gpu
 assets/     schema, lexicon, retrieval index, learned hints
 data/       the generated dataset (1,000 programs + manifest + stats)
-docs/       results.md · metrics.md · architecture-diff.md · architecture.svg
+docs/       walkthrough.md · presenting-the-deck.md · results.md · metrics.md
+            architecture-diff.md · architecture.svg
 webapp/     stdlib-only console: six tabs, five hierarchy views
 ```
 
