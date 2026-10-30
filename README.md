@@ -48,7 +48,7 @@ Full record of every run: [`docs/results.md`](docs/results.md).
 
 `scripts/generate_nested_code.py` generates nesting **to order**, because scraped corpora do
 not contain it. Measured over 3,001 real py150 files: 45% have no nesting at all, and only
-0.23% reach depth 14.
+0.27% reach depth 14.
 
 | | |
 |---|---|
